@@ -96,3 +96,33 @@ int OpticalFlowPX4::calcFlow(uint8_t *img_current, const uint32_t &img_time_us, 
 
 
 }
+
+	int OpticalFlowPX4::calcFlowWithDelta(uint8_t *img_current, const uint32_t &img_time_us, int &dt_us,
+			       float &flow_x, float &flow_y, float &flow_delta_x, float &flow_delta_y){
+	if (!initialized) {
+		//first call of the function -> copy image for flow calculation
+		memcpy(img_old, img_current, image_width * image_height * sizeof(uint8_t));
+		initialized = true;
+		return 0;
+	}
+
+	//not needed
+	float x_gyro_rate = 0;
+	float y_gyro_rate = 0;
+	float z_gyro_rate = 0;
+
+	int flow_quality = px4_flow->compute_flow(img_old, img_current,
+			   x_gyro_rate, y_gyro_rate, z_gyro_rate, &flow_x, &flow_y);
+
+	memcpy(img_old, img_current, image_width * image_height * sizeof(uint8_t));
+
+	flow_quality = limitRate(flow_quality, img_time_us, &dt_us, &flow_x, &flow_y);
+
+	flow_delta_x = flow_x;
+	flow_delta_y = flow_y;
+
+	flow_x = atan2(flow_x, focal_length_x); //convert pixel flow to angular flow
+	flow_y = atan2(flow_y, focal_length_y); //convert pixel flow to angular flow
+
+	return flow_quality;
+	}

@@ -67,5 +67,7 @@ public:
 
 	int calcFlow(uint8_t *img_current, const uint32_t &img_time_us, int &dt_us,
 		     float &flow_x, float &flow_y);
+	int calcFlowWithDelta(uint8_t *img_current, const uint32_t &img_time_us, int &dt_us,
+			       float &flow_x, float &flow_y, float &flow_delta_x, float &flow_delta_y);
 
 };
