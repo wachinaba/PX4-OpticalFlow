@@ -32,11 +32,11 @@
  ****************************************************************************/
 
 /*
-*  optical_flow.h
-*
-*  Created on: Dec 13, 2016
-*      Author: Christoph
-*/
+ *  optical_flow.h
+ *
+ *  Created on: Dec 13, 2016
+ *      Author: Christoph
+ */
 
 #pragma once
 
@@ -50,39 +50,78 @@
 
 class OpticalFlow
 {
-
 protected:
-	//params which can be set
-	int image_width;
-	int image_height;
-	float focal_length_x; //[pixel]
-	float focal_length_y; //[pixel]
-	int output_rate;
-	float sum_flow_x;
-	float sum_flow_y;
-	int sum_flow_quality;
-	int valid_frame_count;
+  // params which can be set
+  int image_width;
+  int image_height;
+  float focal_length_x;	 //[pixel]
+  float focal_length_y;	 //[pixel]
+  int output_rate;
+  float sum_flow_x;
+  float sum_flow_y;
+  int sum_flow_quality;
+  int valid_frame_count;
+  int time_last_frame_us_;
 
-	void initLimitRate();
-	int limitRate(int flow_quality, const uint32_t frame_time_us, int *dt_us,
-		      float *flow_x, float *flow_y);
+  void initLimitRate();
+  int limitRate(int flow_quality, const uint32_t frame_time_us, int* dt_us, float* flow_x, float* flow_y);
 
 public:
+  OpticalFlow()
+	: image_width(DEFAULT_IMAGE_WIDTH)
+	, image_height(DEFAULT_IMAGE_HEIGHT)
+	, focal_length_x(0.0)
+	, focal_length_y(0.0)
+	, output_rate(DEFAULT_OUTPUT_RATE)
+	, sum_flow_x(0.0)
+	, sum_flow_y(0.0)
+	, sum_flow_quality(0)
+	, valid_frame_count(0)
+	, time_last_frame_us_(0){};
 
-	virtual ~OpticalFlow(){};
+  virtual ~OpticalFlow(){};
 
-	inline void setImageWidth(int img_width) { image_width = img_width; };
-	inline void setImageHeight(int img_height) { image_height = img_height; };
-	inline void setFocalLengthX(float f_lengh) { focal_length_x = f_lengh; };
-	inline void setFocalLengthY(float f_lengh) { focal_length_y = f_lengh; };
-	inline void setOutputRate(int out_rate) { output_rate = out_rate; };   //TODO check valid range 10-20?
+  inline void setImageWidth(int img_width)
+  {
+	image_width = img_width;
+  };
+  inline void setImageHeight(int img_height)
+  {
+	image_height = img_height;
+  };
+  inline void setFocalLengthX(float f_lengh)
+  {
+	focal_length_x = f_lengh;
+  };
+  inline void setFocalLengthY(float f_lengh)
+  {
+	focal_length_y = f_lengh;
+  };
+  inline void setOutputRate(int out_rate)
+  {
+	output_rate = out_rate;
+  };  // TODO check valid range 10-20?
 
-	inline int getImageWidth() { return image_width; };
-	inline int getImageHeight() { return image_height; };
-	inline int getFocalLengthX() { return focal_length_x; };
-	inline int getFocalLengthy() { return focal_length_y; };
-	inline int getOutputRate() { return output_rate; };
+  inline int getImageWidth()
+  {
+	return image_width;
+  };
+  inline int getImageHeight()
+  {
+	return image_height;
+  };
+  inline int getFocalLengthX()
+  {
+	return focal_length_x;
+  };
+  inline int getFocalLengthy()
+  {
+	return focal_length_y;
+  };
+  inline int getOutputRate()
+  {
+	return output_rate;
+  };
 
-	virtual int calcFlow(uint8_t *img_current, const uint32_t &img_time_us, int &dt_us, float &flow_x, float &flow_y) = 0;
-
+  virtual int calcFlow(uint8_t* img_current, const uint32_t& img_time_us, int& dt_us, float& flow_x, float& flow_y) = 0;
 };
